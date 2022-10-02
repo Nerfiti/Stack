@@ -1,16 +1,5 @@
 #include "stack.h"
 
-int bin(int a)
-{
-    int result = 0;
-    for (int m = 1; a > 0; m *= 10)
-    {
-        result += m*(a%2);
-        a /= 2;
-    }
-    return result;
-}
-
 int main()
 {
     int err = 0;

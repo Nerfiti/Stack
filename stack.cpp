@@ -39,7 +39,9 @@ int StackCtor(stack_id *stk_id_ptr, size_t capacity, elem_t POISON)
     {
         return WRONG_CAPACITY;
     }
+    
     stack *stk = (stack *)calloc(sizeof(stack), 1);
+    
     stk->LeftCanary = CANARY;
     stk->data = (elem_t *)((CANARY_t *)calloc(capacity*sizeof(elem_t) + 2*sizeof(CANARY_t), 1) + 1);
     stk->size = 0;
@@ -47,12 +49,15 @@ int StackCtor(stack_id *stk_id_ptr, size_t capacity, elem_t POISON)
     stk->POISON = POISON;
     stk->STACK_HASH = GenHash((CANARY_t *)stk + 1, sizeof(stack)-2*sizeof(CANARY_t)-2*sizeof(Hash));
     stk->RightCanary = CANARY;
+    
     for (int i = 0; i < capacity; i++)
     {
         stk->data[i] = POISON;
     }
     stk->DATA_HASH = GenHash(stk->data, capacity*sizeof(elem_t));
+    
     SetBirds(stk);
+    
     *stk_id_ptr = (stack_id)stk;
     return StackOk(stk);
 }
@@ -72,7 +77,7 @@ int StackPush(stack_id stk_id, elem_t item)
 
     stk->data[stk->size] = item;
     stk->size++;
-    stk->STACK_HASH = GenHash((CANARY_t *)stk + 1, sizeof(stack)-2*sizeof(CANARY_t)-2*sizeof(Hash));
+    stk->STACK_HASH = GenHash((CANARY_t *)stk + 1, sizeof(stack) - 2*sizeof(CANARY_t) - 2*sizeof(Hash));
     stk->DATA_HASH = GenHash(stk->data, stk->capacity*sizeof(elem_t));
 
     return StackOk(stk);
@@ -93,7 +98,7 @@ int StackPop(stack_id stk_id, elem_t *target)
     {
         return err;
     }
-    stk->STACK_HASH = GenHash((CANARY_t *)stk + 1, sizeof(stack)-2*sizeof(CANARY_t)-2*sizeof(Hash));
+    stk->STACK_HASH = GenHash((CANARY_t *)stk + 1, sizeof(stack) - 2*sizeof(CANARY_t) - 2*sizeof(Hash));
     stk->DATA_HASH = GenHash(stk->data, stk->capacity*sizeof(elem_t));
 
     return StackOk(stk);
@@ -181,7 +186,7 @@ int StackOk(stack_id stk_id)
         err += WRONG_DATA_PTR;
         return err;
     }
-    if (stk->STACK_HASH != GenHash((CANARY_t *)stk + 1, sizeof(stack)-2*sizeof(CANARY_t)-2*sizeof(Hash)))
+    if (stk->STACK_HASH != GenHash((CANARY_t *)stk + 1, sizeof(stack) - 2*sizeof(CANARY_t) - 2*sizeof(Hash)))
     {
         err += WRONG_STACK_HASH;
     }
@@ -231,7 +236,7 @@ static unsigned long long GenHash(void *memptr, size_t size_of_memblock)
     int i = 0;
     while (i < size_of_memblock)
     {
-        hash = (~hash) * (ptr[i] + hash + 3)+ ~(hash) ^ (CANARY);
+        hash = (~hash) * (ptr[i] + hash + 3) + ~(hash) ^ (CANARY);
         ++i;
     }
     return hash;
